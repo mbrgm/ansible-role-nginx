@@ -1,0 +1,27 @@
+---
+- name: install_package
+  package:
+    name: nginx
+    state: latest
+  notify:
+    - restart_nginx
+
+- name: disable_server_tokens
+  copy:
+    dest: /etc/nginx/conf.d/server_tokens.conf
+    content: |
+      server_tokens off;
+  notify: reload_nginx
+
+- name: setup_catch_all_site
+  template:
+    src: default
+    dest: /etc/nginx/sites-enabled/default
+    mode: 0600
+  notify: reload_nginx
+
+- name: setup_service
+  service:
+    name: nginx
+    state: started
+    enabled: True
